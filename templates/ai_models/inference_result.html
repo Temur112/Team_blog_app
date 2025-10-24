@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Inference Result - {{ inference_request.model.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Result Card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0">Inference Result</h3>
+                        <small class="text-muted">{{ inference_request.model.name }} • {{ inference_request.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <span class="badge bg-{% if inference_request.status == 'completed' %}success{% elif inference_request.status == 'failed' %}danger{% else %}warning{% endif %} fs-6">
+                        {{ inference_request.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    {% if inference_request.status == 'completed' and inference_request.result %}
+                    <!-- Display Results -->
+                    <div class="mb-4">
+                        <h5>Model Output:</h5>
+                        <div class="bg-light p-3 rounded">
+                            {% if inference_request.model.model_type == 'text_classification' %}
+                                {% if inference_request.result.predicted_class %}
+                                <div class="alert alert-success">
+                                    <strong>Predicted Class:</strong> {{ inference_request.result.predicted_class }}
+                                </div>
+                                {% endif %}
+                                {% if inference_request.result.predictions %}
+                                <h6>All Predictions:</h6>
+                                <div class="row">
+                                    {% for pred in inference_request.result.predictions %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>{{ pred.label }}</span>
+                                            <span class="badge bg-primary">{{ pred.confidence|floatformat:3 }}</span>
+                                        </div>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" style="width: {{ pred.confidence|floatformat:0 }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                
+                            {% elif inference_request.model.model_type == 'sentiment_analysis' %}
+                                <div class="alert alert-info">
+                                    <strong>Sentiment:</strong> {{ inference_request.result.sentiment }}
+                                    <span class="badge bg-primary ms-2">{{ inference_request.result.confidence|floatformat:3 }}</span>
+                                </div>
+                                {% if inference_request.result.scores %}
+                                <h6>Sentiment Scores:</h6>
+                                <div class="row">
+                                    {% for sentiment, score in inference_request.result.scores.items %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>{{ sentiment|title }}</span>
+                                            <span class="badge bg-secondary">{{ score|floatformat:3 }}</span>
+                                        </div>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" style="width: {{ score|floatformat:0 }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                
+                            {% elif inference_request.model.model_type == 'text_generation' %}
+                                <div class="alert alert-success">
+                                    <strong>Generated Text:</strong>
+                                </div>
+                                <div class="border p-3 rounded bg-white">
+                                    {{ inference_request.result.generated_text }}
+                                </div>
+                                {% if inference_request.result.tokens_generated %}
+                                <small class="text-muted">Tokens generated: {{ inference_request.result.tokens_generated }}</small>
+                                {% endif %}
+                                
+                            {% elif inference_request.model.model_type == 'image_classification' %}
+                                {% if inference_request.result.predicted_class %}
+                                <div class="alert alert-success">
+                                    <strong>Predicted Class:</strong> {{ inference_request.result.predicted_class }}
+                                </div>
+                                {% endif %}
+                                {% if inference_request.result.predictions %}
+                                <h6>Classification Results:</h6>
+                                <div class="row">
+                                    {% for pred in inference_request.result.predictions %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>{{ pred.label }}</span>
+                                            <span class="badge bg-primary">{{ pred.confidence|floatformat:3 }}</span>
+                                        </div>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar" style="width: {{ pred.confidence|floatformat:0 }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                
+                            {% else %}
+                                <!-- Generic result display -->
+                                <pre class="mb-0"><code>{{ inference_request.result|pprint }}</code></pre>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Metrics -->
+                    {% if inference_request.processing_time %}
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="h6 text-primary">{{ inference_request.processing_time|floatformat:2 }}s</div>
+                            <small class="text-muted">Processing Time</small>
+                        </div>
+                        {% if inference_request.memory_usage %}
+                        <div class="col-4">
+                            <div class="h6 text-info">{{ inference_request.memory_usage|floatformat:1 }}MB</div>
+                            <small class="text-muted">Memory Usage</small>
+                        </div>
+                        {% endif %}
+                        <div class="col-4">
+                            <div class="h6 text-success">{{ inference_request.model.success_rate|floatformat:1 }}%</div>
+                            <small class="text-muted">Model Success Rate</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% elif inference_request.status == 'failed' %}
+                    <div class="alert alert-danger">
+                        <h5>Inference Failed</h5>
+                        <p class="mb-0">{{ inference_request.error_message }}</p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <h5>Processing...</h5>
+                        <p class="mb-0">Your inference request is being processed. Please wait.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Input Data -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Input Data</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="bg-light p-3 rounded"><code>{{ inference_request.input_data|pprint }}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Feedback Form -->
+            {% if not existing_feedback and inference_request.status == 'completed' %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Provide Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Was this result correct?</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="feedback_type" id="correct" value="correct">
+                                <label class="btn btn-outline-success" for="correct">Correct</label>
+                                
+                                <input type="radio" class="btn-check" name="feedback_type" id="incorrect" value="incorrect">
+                                <label class="btn btn-outline-danger" for="incorrect">Incorrect</label>
+                                
+                                <input type="radio" class="btn-check" name="feedback_type" id="partial" value="partially_correct">
+                                <label class="btn btn-outline-warning" for="partial">Partial</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Rating (1-5)</label>
+                            <select class="form-select" id="rating" name="rating">
+                                <option value="">Select rating</option>
+                                <option value="1">1 - Poor</option>
+                                <option value="2">2 - Fair</option>
+                                <option value="3">3 - Good</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="5">5 - Excellent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Comments (Optional)</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" 
+                                      placeholder="Share your thoughts about this result..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Submit Feedback</button>
+                    </form>
+                </div>
+            </div>
+            {% elif existing_feedback %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <strong>Thank you for your feedback!</strong>
+                        <p class="mb-0">
+                            You rated this result as: <span class="badge bg-primary">{{ existing_feedback.get_feedback_type_display }}</span>
+                            {% if existing_feedback.rating %}
+                            <br>Rating: {{ existing_feedback.rating }}/5
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if existing_feedback.comment %}
+                    <p><strong>Your comment:</strong></p>
+                    <p class="text-muted">{{ existing_feedback.comment }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Model Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Model Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Model:</strong> {{ inference_request.model.name }}</p>
+                    <p><strong>Type:</strong> {{ inference_request.model.get_model_type_display }}</p>
+                    <p><strong>Version:</strong> {{ inference_request.model.version }}</p>
+                    <p><strong>Framework:</strong> {{ inference_request.model.framework }}</p>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'ai_models:model_detail' inference_request.model.slug %}" 
+                           class="btn btn-outline-primary btn-sm">View Model Details</a>
+                        <a href="{% url 'ai_models:inference_interface' inference_request.model.slug %}" 
+                           class="btn btn-primary btn-sm">Try Again</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

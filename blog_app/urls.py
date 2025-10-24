@@ -24,6 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('blog.urls')),
     path('account/', include('account.urls')),
+    path('ai-models/', include('ai_models.urls')),
+    path('api/ai-models/', include('ai_models.api_urls')),
     path('markdownx/', include('markdownx.urls')),
 ]
 

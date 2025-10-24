@@ -37,6 +37,27 @@ class CommentForm(forms.ModelForm):
             })
         }
 
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ['name', 'color']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter tag name'
+            }),
+            'color': forms.TextInput(attrs={
+                'class': 'form-control',
+                'type': 'color',
+                'value': '#007bff'
+            })
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['color'].widget.attrs.update({'class': 'form-control', 'type': 'color'})
+
 class SearchForm(forms.Form):
     query = forms.CharField(
         max_length=100,

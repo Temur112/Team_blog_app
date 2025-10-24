@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ model.name }} - AI Model Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Model Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="card-title">{{ model.name }}</h1>
+                            <p class="text-muted mb-0">Version {{ model.version }} • {{ model.get_model_type_display }}</p>
+                        </div>
+                        <div class="text-end">
+                            {% if model.category %}
+                            <span class="badge fs-6" style="background-color: {{ model.category.color }};">
+                                {{ model.category.name }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <p class="card-text">{{ model.description }}</p>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button class="btn btn-secondary btn-lg" disabled title="Inference functionality coming soon">
+                            <i class="fas fa-clock me-2"></i>Try This Model
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Information -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Model Specifications</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Framework:</strong></td>
+                                    <td>{{ model.framework }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Max Input Length:</strong></td>
+                                    <td>{{ model.max_input_length }} characters</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Batch Size:</strong></td>
+                                    <td>{{ model.batch_size }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>
+                                        <span class="badge bg-{% if model.status == 'ready' %}success{% elif model.status == 'deployed' %}primary{% else %}warning{% endif %}">
+                                            {{ model.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Performance Metrics</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                {% if model.accuracy %}
+                                <tr>
+                                    <td><strong>Accuracy:</strong></td>
+                                    <td>{{ model.accuracy|floatformat:3 }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if model.precision %}
+                                <tr>
+                                    <td><strong>Precision:</strong></td>
+                                    <td>{{ model.precision|floatformat:3 }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if model.recall %}
+                                <tr>
+                                    <td><strong>Recall:</strong></td>
+                                    <td>{{ model.recall|floatformat:3 }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if model.f1_score %}
+                                <tr>
+                                    <td><strong>F1 Score:</strong></td>
+                                    <td>{{ model.f1_score|floatformat:3 }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td><strong>Success Rate:</strong></td>
+                                    <td class="text-success">{{ model.success_rate|floatformat:1 }}%</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input/Output Format -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Input/Output Format</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Input Format:</h6>
+                            <pre class="bg-light p-3 rounded"><code>{{ model.input_format|pprint }}</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Output Format:</h6>
+                            <pre class="bg-light p-3 rounded"><code>{{ model.output_format|pprint }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Usage Statistics -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Usage Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="h4 text-primary">{{ model.total_inferences }}</div>
+                            <small class="text-muted">Total Inferences</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="h4 text-success">{{ model.successful_inferences }}</div>
+                            <small class="text-muted">Successful</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Info -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Model Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Created by:</strong> {{ model.created_by.get_full_name|default:model.created_by.username }}</p>
+                    <p><strong>Created:</strong> {{ model.created_at|date:"M d, Y" }}</p>
+                    <p><strong>Last Updated:</strong> {{ model.updated_at|date:"M d, Y" }}</p>
+                    {% if model.last_trained %}
+                    <p><strong>Last Trained:</strong> {{ model.last_trained|date:"M d, Y" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            {% if recent_inferences %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% for inference in recent_inferences %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="text-muted">{{ inference.user.username }}</small>
+                            <div>
+                                <span class="badge bg-{% if inference.status == 'completed' %}success{% elif inference.status == 'failed' %}danger{% else %}warning{% endif %}">
+                                    {{ inference.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ inference.created_at|timesince }} ago</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

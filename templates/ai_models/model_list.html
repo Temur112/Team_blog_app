@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}AI Models - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>AI Models</h1>
+                {% if user.is_authenticated %}
+                <div>
+                    <a href="{% url 'ai_models:create_model' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create New Model
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="search" 
+                                   placeholder="Search models..." value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="category">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.slug }}" 
+                                        {% if current_category == category.slug %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" name="type">
+                                <option value="">All Types</option>
+                                {% for type_code, type_name in model_types %}
+                                <option value="{{ type_code }}" 
+                                        {% if current_type == type_code %}selected{% endif %}>
+                                    {{ type_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Models Grid -->
+            <div class="row">
+                {% for model in page_obj %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        {% if model.category %}
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="badge" style="background-color: {{ model.category.color }};">
+                                {{ model.category.name }}
+                            </span>
+                            <span class="badge bg-secondary">{{ model.get_model_type_display }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ model.name }}</h5>
+                            <p class="card-text text-muted">{{ model.description|truncatewords:20 }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="row text-center mb-3">
+                                    <div class="col-4">
+                                        <small class="text-muted">Version</small>
+                                        <div class="fw-bold">{{ model.version }}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted">Success Rate</small>
+                                        <div class="fw-bold text-success">{{ model.success_rate|floatformat:1 }}%</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <small class="text-muted">Inferences</small>
+                                        <div class="fw-bold">{{ model.total_inferences }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'ai_models:model_detail' model.slug %}" 
+                                       class="btn btn-outline-primary">View Details</a>
+                                    <button class="btn btn-secondary" disabled title="Inference functionality coming soon">
+                                        <i class="fas fa-clock me-1"></i>Try Model
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <h4>No models found</h4>
+                        <p>Try adjusting your search criteria or check back later for new models.</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Model pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_type %}&type={{ current_type }}{% endif %}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - AI Models{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>{{ title }}
+                    </h3>
+                    <small class="text-muted">Fill in the details below to {{ title|lower }}</small>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    <strong>Model Name</strong> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.version.id_for_label }}" class="form-label">
+                                    <strong>Version</strong>
+                                </label>
+                                {{ form.version }}
+                                {% if form.version.errors %}
+                                    <div class="text-danger small">{{ form.version.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    <strong>Description</strong> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.model_type.id_for_label }}" class="form-label">
+                                    <strong>Model Type</strong> <span class="text-danger">*</span>
+                                </label>
+                                {{ form.model_type }}
+                                {% if form.model_type.errors %}
+                                    <div class="text-danger small">{{ form.model_type.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    <strong>Category</strong>
+                                </label>
+                                {{ form.category }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    <a href="{% url 'ai_models:create_category' %}" class="text-decoration-none">
+                                        <i class="fas fa-plus me-1"></i>Create new category
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Details -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-cogs me-2"></i>Technical Details
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.framework.id_for_label }}" class="form-label">
+                                    <strong>Framework</strong>
+                                </label>
+                                {{ form.framework }}
+                                {% if form.framework.errors %}
+                                    <div class="text-danger small">{{ form.framework.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.max_input_length.id_for_label }}" class="form-label">
+                                    <strong>Max Input Length</strong>
+                                </label>
+                                {{ form.max_input_length }}
+                                {% if form.max_input_length.errors %}
+                                    <div class="text-danger small">{{ form.max_input_length.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.batch_size.id_for_label }}" class="form-label">
+                                    <strong>Batch Size</strong>
+                                </label>
+                                {{ form.batch_size }}
+                                {% if form.batch_size.errors %}
+                                    <div class="text-danger small">{{ form.batch_size.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    {{ form.is_public }}
+                                    <label class="form-check-label" for="{{ form.is_public.id_for_label }}">
+                                        <strong>Make this model public</strong>
+                                    </label>
+                                </div>
+                                {% if form.is_public.errors %}
+                                    <div class="text-danger small">{{ form.is_public.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- File Uploads -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-upload me-2"></i>Model Files
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.model_file.id_for_label }}" class="form-label">
+                                    <strong>Model File</strong>
+                                </label>
+                                {{ form.model_file }}
+                                {% if form.model_file.errors %}
+                                    <div class="text-danger small">{{ form.model_file.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Supported formats: .pkl, .pth, .h5, .onnx, .pt, .json, .yaml, .yml (Max: 100MB)
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.config_file.id_for_label }}" class="form-label">
+                                    <strong>Config File</strong>
+                                </label>
+                                {{ form.config_file }}
+                                {% if form.config_file.errors %}
+                                    <div class="text-danger small">{{ form.config_file.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Supported formats: .json, .yaml, .yml (Max: 10MB)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Metrics -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-chart-line me-2"></i>Performance Metrics
+                                    <small class="text-muted">(Optional - values between 0 and 1)</small>
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.accuracy.id_for_label }}" class="form-label">
+                                    <strong>Accuracy</strong>
+                                </label>
+                                {{ form.accuracy }}
+                                {% if form.accuracy.errors %}
+                                    <div class="text-danger small">{{ form.accuracy.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.precision.id_for_label }}" class="form-label">
+                                    <strong>Precision</strong>
+                                </label>
+                                {{ form.precision }}
+                                {% if form.precision.errors %}
+                                    <div class="text-danger small">{{ form.precision.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.recall.id_for_label }}" class="form-label">
+                                    <strong>Recall</strong>
+                                </label>
+                                {{ form.recall }}
+                                {% if form.recall.errors %}
+                                    <div class="text-danger small">{{ form.recall.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.f1_score.id_for_label }}" class="form-label">
+                                    <strong>F1 Score</strong>
+                                </label>
+                                {{ form.f1_score }}
+                                {% if form.f1_score.errors %}
+                                    <div class="text-danger small">{{ form.f1_score.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Input/Output Format -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-code me-2"></i>Input/Output Format
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.input_format.id_for_label }}" class="form-label">
+                                    <strong>Input Format (JSON)</strong>
+                                </label>
+                                {{ form.input_format }}
+                                {% if form.input_format.errors %}
+                                    <div class="text-danger small">{{ form.input_format.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Define the expected input format as JSON
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.output_format.id_for_label }}" class="form-label">
+                                    <strong>Output Format (JSON)</strong>
+                                </label>
+                                {{ form.output_format }}
+                                {% if form.output_format.errors %}
+                                    <div class="text-danger small">{{ form.output_format.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Define the output format as JSON
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'ai_models:model_list' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                {% if model %}Update Model{% else %}Create Model{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Help Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Help & Guidelines
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>Model Types:</h6>
+                    <ul class="small">
+                        <li><strong>Text Classification:</strong> Categorize text into predefined classes</li>
+                        <li><strong>Sentiment Analysis:</strong> Determine emotional tone of text</li>
+                        <li><strong>Text Generation:</strong> Generate new text based on input</li>
+                        <li><strong>Image Classification:</strong> Classify images into categories</li>
+                        <li><strong>Object Detection:</strong> Detect and locate objects in images</li>
+                        <li><strong>NER:</strong> Extract named entities from text</li>
+                    </ul>
+                    
+                    <h6 class="mt-3">File Formats:</h6>
+                    <ul class="small">
+                        <li><strong>Model Files:</strong> .pkl, .pth, .h5, .onnx, .pt</li>
+                        <li><strong>Config Files:</strong> .json, .yaml, .yml</li>
+                    </ul>
+                    
+                    <h6 class="mt-3">Performance Metrics:</h6>
+                    <p class="small text-muted">
+                        Enter values between 0 and 1. These help users understand model performance.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Examples Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Format Examples
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6>Input Format Example:</h6>
+                    <pre class="bg-light p-2 rounded small"><code>{
+  "text": "string",
+  "max_length": 512
+}</code></pre>
+                    
+                    <h6 class="mt-3">Output Format Example:</h6>
+                    <pre class="bg-light p-2 rounded small"><code>{
+  "prediction": "string",
+  "confidence": "float"
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// JSON format validation
+document.addEventListener('DOMContentLoaded', function() {
+    const inputFormat = document.getElementById('{{ form.input_format.id_for_label }}');
+    const outputFormat = document.getElementById('{{ form.output_format.id_for_label }}');
+    
+    function validateJSON(textarea) {
+        const value = textarea.value.trim();
+        if (value) {
+            try {
+                JSON.parse(value);
+                textarea.classList.remove('is-invalid');
+                textarea.classList.add('is-valid');
+            } catch (e) {
+                textarea.classList.remove('is-valid');
+                textarea.classList.add('is-invalid');
+            }
+        } else {
+            textarea.classList.remove('is-valid', 'is-invalid');
+        }
+    }
+    
+    if (inputFormat) {
+        inputFormat.addEventListener('input', function() {
+            validateJSON(this);
+        });
+    }
+    
+    if (outputFormat) {
+        outputFormat.addEventListener('input', function() {
+            validateJSON(this);
+        });
+    }
+    
+    // File size validation
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const maxSize = this.id.includes('model_file') ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert(`File size exceeds limit. Max size: ${maxSize / (1024 * 1024)}MB`);
+                    this.value = '';
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

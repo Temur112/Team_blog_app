@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from .models import Post, Tag, Comment
-from .forms import PostForm, CommentForm, SearchForm
+from .forms import PostForm, CommentForm, SearchForm, TagForm
 
 def home(request):
     """Homepage with recent posts"""
@@ -158,6 +158,45 @@ def tag_posts(request, slug):
         'page_obj': page_obj,
     }
     return render(request, 'blog/tag_posts.html', context)
+
+def our_work(request):
+    """Display posts tagged with 'Our Work' or 'Our'"""
+    # Get posts tagged with 'Our Work' or any tag containing 'our'
+    posts = Post.objects.filter(
+        tags__name__icontains='our',
+        status='published'
+    ).distinct().select_related('author')
+    
+    paginator = Paginator(posts, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'title': 'Our Work',
+        'description': 'Showcasing our team\'s projects, research, and achievements'
+    }
+    
+    return render(request, 'blog/our_work.html', context)
+
+@login_required
+def create_tag(request):
+    """Create a new tag"""
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            tag = form.save()
+            messages.success(request, f'Tag "{tag.name}" has been created successfully!')
+            return redirect('blog:post_list')
+    else:
+        form = TagForm()
+    
+    context = {
+        'form': form,
+        'title': 'Create New Tag'
+    }
+    
+    return render(request, 'blog/tag_form.html', context)
 
 # AJAX endpoints for enhanced functionality
 @login_required

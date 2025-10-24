@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}My AI Model Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>My AI Model Dashboard</h1>
+                <div>
+                    <a href="{% url 'ai_models:create_model' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create New Model
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="h2 text-primary">{{ total_models }}</div>
+                            <p class="card-text">Total Models</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="h2 text-success">{{ public_models }}</div>
+                            <p class="card-text">Public Models</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="h2 text-info">{{ ready_models }}</div>
+                            <p class="card-text">Ready Models</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Models -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">My Models</h5>
+                </div>
+                <div class="card-body">
+                    {% if page_obj %}
+                    <div class="row">
+                        {% for model in page_obj %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ model.name }}</h6>
+                                    <p class="card-text small text-muted">{{ model.description|truncatewords:10 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-{% if model.status == 'ready' %}success{% elif model.status == 'deployed' %}primary{% else %}warning{% endif %}">
+                                            {{ model.get_status_display }}
+                                        </span>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'ai_models:model_detail' model.slug %}" class="btn btn-outline-primary">View</a>
+                                            <a href="{% url 'ai_models:edit_model' model.slug %}" class="btn btn-outline-secondary">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                    <nav aria-label="Model pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                            </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    
+                    {% else %}
+                    <div class="text-center py-4">
+                        <h5>No models created yet</h5>
+                        <p class="text-muted">Create your first AI model to get started.</p>
+                        <a href="{% url 'ai_models:create_model' %}" class="btn btn-primary">Create Model</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Coming Soon -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Inference History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-clock fa-3x text-muted"></i>
+                        </div>
+                        <h4>Inference functionality coming soon!</h4>
+                        <p class="text-muted">The ability to run inferences and track history will be available in a future update.</p>
+                        <a href="{% url 'ai_models:model_list' %}" class="btn btn-primary">Browse Models</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

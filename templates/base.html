@@ -96,7 +96,10 @@
                         <a class="nav-link" href="{% url 'blog:post_list' %}">All Posts</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'blog:post_list' %}">Our Work</a>
+                        <a class="nav-link" href="{% url 'blog:our_work' %}">Our Work</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ai_models:model_list' %}">AI Models</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="tagsDropdown" role="button" data-bs-toggle="dropdown">
@@ -114,10 +117,25 @@
                 
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'blog:create_post' %}">
-                                <i class="fas fa-plus me-1"></i>New Post
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="createDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-plus me-1"></i>Create
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'blog:create_post' %}">
+                                    <i class="fas fa-edit me-2"></i>New Post
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'blog:create_tag' %}">
+                                    <i class="fas fa-tag me-2"></i>New Tag
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'ai_models:create_model' %}">
+                                    <i class="fas fa-robot me-2"></i>New AI Model
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'ai_models:create_category' %}">
+                                    <i class="fas fa-tags me-2"></i>New Category
+                                </a></li>
+                            </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
@@ -126,6 +144,8 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% url 'blog:user_profile' user.username %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ai_models:my_models' %}">My AI Models</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ai_models:user_dashboard' %}">AI Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
