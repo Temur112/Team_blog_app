@@ -5,13 +5,5 @@ Pillow
 django-crispy-forms
 crispy-bootstrap5
 python-decouple
-setuptools
 djangorestframework
 django-cors-headers
-celery
-redis
-numpy
-torch
-transformers
-scikit-learn
-pandas

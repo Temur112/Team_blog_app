@@ -1,9 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import (
-    AIModelCategory, AIModel, InferenceRequest, 
-    ModelUsageLog, ModelFeedback, ModelDeployment
-)
+from .models import AIModelCategory, AIModel
 
 
 @admin.register(AIModelCategory)
@@ -71,56 +68,4 @@ class AIModelAdmin(admin.ModelAdmin):
     success_rate_display.short_description = 'Success Rate'
 
 
-@admin.register(InferenceRequest)
-class InferenceRequestAdmin(admin.ModelAdmin):
-    list_display = [
-        'id', 'model', 'user', 'status', 'processing_time', 'created_at'
-    ]
-    list_filter = ['status', 'model', 'created_at']
-    search_fields = ['model__name', 'user__username']
-    readonly_fields = ['created_at', 'started_at', 'completed_at']
-    
-    fieldsets = (
-        ('Request Details', {
-            'fields': ('model', 'user', 'input_data', 'parameters')
-        }),
-        ('Status & Results', {
-            'fields': ('status', 'result', 'error_message')
-        }),
-        ('Performance', {
-            'fields': ('processing_time', 'memory_usage')
-        }),
-        ('Timestamps', {
-            'fields': ('created_at', 'started_at', 'completed_at'),
-            'classes': ('collapse',)
-        }),
-    )
-
-
-@admin.register(ModelUsageLog)
-class ModelUsageLogAdmin(admin.ModelAdmin):
-    list_display = [
-        'id', 'model', 'user', 'response_time', 'ip_address', 'created_at'
-    ]
-    list_filter = ['model', 'created_at']
-    search_fields = ['model__name', 'user__username', 'ip_address']
-    readonly_fields = ['created_at']
-
-
-@admin.register(ModelFeedback)
-class ModelFeedbackAdmin(admin.ModelAdmin):
-    list_display = [
-        'inference_request', 'user', 'feedback_type', 'rating', 'created_at'
-    ]
-    list_filter = ['feedback_type', 'rating', 'created_at']
-    search_fields = ['inference_request__model__name', 'user__username']
-
-
-@admin.register(ModelDeployment)
-class ModelDeploymentAdmin(admin.ModelAdmin):
-    list_display = [
-        'model', 'deployment_type', 'is_active', 'is_healthy', 'endpoint_url', 'created_at'
-    ]
-    list_filter = ['deployment_type', 'is_active', 'is_healthy', 'created_at']
-    search_fields = ['model__name', 'endpoint_url']
-    readonly_fields = ['created_at', 'updated_at', 'last_health_check']
+# Inference-related admin classes removed - functionality disabled
