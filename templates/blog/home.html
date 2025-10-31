@@ -1,23 +1,56 @@
 {% extends 'base.html' %}
-{% load blog_extras %}
+{% load static blog_extras %}
 
-{% block title %}Home - Educational Blog{% endblock %}
+{% block title %}Bosh sahifa - Ta'limiy Blog{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  .hero-section{
+    min-height: 100vh;             /* fill the viewport */
+    background: url("{% static 'img/hero2.png' %}") center/cover no-repeat;
+    position: relative;
+    color: #fff;
+    /* Pull hero under fixed navbar, but keep content visible */
+    margin-top: -72px;
+    padding-top: calc(72px + 4rem);
+  }
+  .hero-section::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.0);  /* readable text over image */
+  }
+  .hero-section > .container{
+    position: relative;            /* above overlay */
+    z-index: 1;
+  }
+  .hero-section h1{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+  }
+  .hero-section p{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
+<section class="hero-section d-flex align-items-center">
     <div class="container">
-        <div class="col-lg-8 mx-auto text-center">
-            <h1 class="display-4 fw-bold mb-4">Master EdTech, AI, and Future Skills.</h1>
-            <p class="lead mb-4">The Ovozify Lab is your source for cutting-edge guides, research, and technical insights.</p>
-            <form method="get" action="{% url 'blog:post_list' %}" class="search-form mx-auto">
-                <div class="input-group">
-                    <input type="text" name="query" class="form-control" placeholder="Search for Python tutorials, AI ethics, etc." required>
-                    <button class="btn btn-light" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
+        <div class="col-lg-8" style="margin-left: 0vw;">
+            <h1 class="display-1 fw-bold mb-4 text-start text-dark">Biz bilan AI <br>
+                sayohatingizni boshlang.</h1>
+            <p class="lead mb-4 text-start text-dark fs-4">AI o‘rgatamiz. <br>
+                AI tizimlarini yaratamiz. <br>
+                AI sohasida tadqiqot olib boramiz. </p>
+            <div class="mt-3 text-start">
+                <a href="https://t.me/otabek_nazar" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
+                    Biz bilan bog'laning
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -27,7 +60,7 @@
     {% if featured_posts %}
     <section class="mb-5">
         <h2 class="mb-4">
-            <i class="fas fa-star text-warning me-2"></i>Featured Posts
+            <i class="fas fa-star text-warning me-2"></i>Tanlangan maqolalar
         </h2>
         <div class="row">
             {% for post in featured_posts %}
@@ -66,7 +99,7 @@
     <!-- Recent Posts -->
     <section>
         <h2 class="mb-4">
-            <i class="fas fa-clock me-2"></i>Recent Posts
+            <i class="fas fa-clock me-2"></i>Yangi maqolalar
         </h2>
         <div class="row">
             {% for post in page_obj %}
@@ -100,10 +133,10 @@
                         {% endif %}
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted">
-                                <i class="fas fa-eye me-1"></i>{{ post.views }} views
+                                <i class="fas fa-eye me-1"></i>{{ post.views }} marta ko‘rilgan
                             </small>
                             <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn-sm btn-outline-primary">
-                                Read More <i class="fas fa-arrow-right ms-1"></i>
+                                Batafsil o‘qish <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                         </div>
                     </div>
@@ -118,7 +151,7 @@
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Oldingi</a>
                     </li>
                 {% endif %}
                 
@@ -136,7 +169,7 @@
                 
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Keyingi</a>
                     </li>
                 {% endif %}
             </ul>

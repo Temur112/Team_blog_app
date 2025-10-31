@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Educational Blog{% endblock %}</title>
+    <title>Ovozify Labs</title>
+    {% load static %}
+
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="any">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon-32.png' %}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon-16.png' %}" sizes="16x16">
+    <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}" sizes="180x180">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- MarkdownX CSS -->
-    {% load static %}
+    {% load blog_extras %}
     <link rel="stylesheet" href="{% static 'markdownx/admin/css/markdownx.css' %}">
     
     <!-- Custom CSS -->
@@ -20,6 +27,10 @@
         .navbar-brand {
             font-weight: bold;
         }
+        html { scroll-behavior: smooth; }
+        .navbar-brand { padding-top: 0; padding-bottom: 0; }
+        .navbar-brand img { height: 32px; width: auto; display: block; }
+        .navbar-nav { align-items: center; } /* vertically centers links */
         .post-card {
             transition: transform 0.2s;
             height: 100%;
@@ -74,16 +85,32 @@
             padding: 2rem 0;
             margin-top: 4rem;
         }
+        /* Keep content visible below fixed navbar */
+        body { padding-top: 72px; }
+        /* Precisely center the middle menu on large screens */
+        @media (min-width: 992px) {
+            .nav-center {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
+            }
+        }
+        /* Center search inside mobile (collapsed) navbar */
+        @media (max-width: 991.98px) {
+            .navbar .search-form { width: 100%; max-width: 500px; }
+            .navbar .search-form .input-group { width: 100%; }
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'blog:home' %}">
-                <i class="fas fa-graduation-cap me-2"></i>Ovozify Lab
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm align-items-center fixed-top">
+        <div class="container position-relative">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'blog:home' %}">
+                <img src="{% static 'img/logo.png' %}" alt="Ovozify Labs" height="32" class="d-inline-block align-middle">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -91,22 +118,19 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <!-- Mobile menu (visible only below lg) -->
+                <ul class="navbar-nav d-lg-none mb-2">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'blog:post_list' %}">All Posts</a>
+                        <a class="nav-link" href="{% url 'blog:post_list' %}">Barcha maqolalar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'blog:our_work' %}">Our Work</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'ai_models:model_list' %}">AI Models</a>
+                        <a class="nav-link" href="{% url 'blog:our_work' %}">Porfolio</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="tagsDropdown" role="button" data-bs-toggle="dropdown">
-                            Tags
+                        <a class="nav-link dropdown-toggle" href="#" id="tagsDropdownMobile" role="button" data-bs-toggle="dropdown">
+                            Teglar
                         </a>
                         <ul class="dropdown-menu">
-                            {% load blog_extras %}
                             {% get_all_tags as all_tags %}
                             {% for tag in all_tags %}
                                 <li><a class="dropdown-item" href="{% url 'blog:tag_posts' tag.slug %}">{{ tag.name }}</a></li>
@@ -114,49 +138,80 @@
                         </ul>
                     </li>
                 </ul>
-                
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="createDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-plus me-1"></i>Create
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'blog:create_post' %}">
-                                    <i class="fas fa-edit me-2"></i>New Post
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'blog:create_tag' %}">
-                                    <i class="fas fa-tag me-2"></i>New Tag
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'ai_models:create_model' %}">
-                                    <i class="fas fa-robot me-2"></i>New AI Model
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'ai_models:create_category' %}">
-                                    <i class="fas fa-tags me-2"></i>New Category
-                                </a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="https://www.gravatar.com/avatar/{{ user.email|md5 }}?s=30&d=mp" class="avatar me-2" alt="{{ user.username }}">
-                                {{ user.username }}
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'blog:user_profile' user.username %}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'ai_models:my_models' %}">My AI Models</a></li>
-                                <li><a class="dropdown-item" href="{% url 'ai_models:user_dashboard' %}">AI Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
-                        </li>
-                    {% endif %}
+                <!-- Center menus -->
+                <ul class="navbar-nav nav-center d-none d-lg-flex">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blog:post_list' %}">Barcha maqolalar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blog:our_work' %}">Porfolio</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ai_models:model_list' %}">AI modellari</a>
+                    </li> -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="tagsDropdown" role="button" data-bs-toggle="dropdown">
+                            Teglar
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% get_all_tags as all_tags %}
+                            {% for tag in all_tags %}
+                                <li><a class="dropdown-item" href="{% url 'blog:tag_posts' tag.slug %}">{{ tag.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                 </ul>
+
+                <!-- Right: search + user controls -->
+                <div class="d-flex ms-auto align-items-center">
+                    <form method="get" action="{% url 'blog:post_list' %}" class="d-flex search-form me-3 mx-auto mx-lg-0" role="search">
+                        <div class="input-group">
+                            <input type="text" name="query" class="form-control" placeholder="Python, ML, NLP, Pytorch, ..." required>
+                            <button class="btn btn-light" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <ul class="navbar-nav">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="createDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-plus me-1"></i>Yaratish
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'blog:create_post' %}">
+                                        <i class="fas fa-edit me-2"></i>Yangi maqola
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'blog:create_tag' %}">
+                                        <i class="fas fa-tag me-2"></i>Yangi teg
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'ai_models:create_model' %}">
+                                        <i class="fas fa-robot me-2"></i>Yangi AI modeli
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'ai_models:create_category' %}">
+                                        <i class="fas fa-tags me-2"></i>Yangi toifa
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    <img src="https://www.gravatar.com/avatar/{{ user.email|md5 }}?s=30&d=mp" class="avatar me-2" alt="{{ user.username }}">
+                                    {{ user.username }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'blog:user_profile' user.username %}">Profil</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'ai_models:my_models' %}">Mening AI modellarim</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'ai_models:user_dashboard' %}">AI boshqaruv paneli</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Chiqish</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -184,32 +239,36 @@
             <div class="row">
                 
                 <div class="col-md-4 mb-3 mb-md-0">
-                    <h5><i class="fas fa-graduation-cap me-2"></i>Ovozify Lab</h5>
-                    <p class="text-muted">A platform for educational content creation and sharing. Our goal is to make learning accessible and engaging for everyone.</p>
-                    <p class="text-muted mb-0">Follow us on social media:</p>
+                    <h5></i>Ovozify Labs</h5>
+                    <p class="text-muted">Bizning maqsadimiz sun’iy intellekt bo‘yicha ta’limni o‘zbek tilida hammabop qilish va o‘zbek jamiyatiga sun’iy intellektning eng so‘nggi yutuqlarini yetkazishdir.</p>
+                    <p class="text-muted mb-0">Ijtimoiy tarmoqlarda kuzating:</p>
                     <div class="mt-2">
-                        <a href="#" class="text-dark me-3"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-dark me-3"><i class="fab fa-linkedin fa-lg"></i></a>
-                        <a href="#" class="text-dark me-3"><i class="fab fa-github fa-lg"></i></a>
+                        <a href="https://t.me/otabek_nazar" class="text-dark me-3" target="_blank" rel="noopener">
+                            <i class="fab fa-telegram fa-lg"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/101479175/" class="text-dark me-3" target="_blank" rel="noopener">
+                            <i class="fab fa-linkedin fa-lg"></i>
+                        </a>
+                        <!-- <a href="#" class="text-dark me-3"><i class="fab fa-github fa-lg"></i></a> -->
                     </div>
                 </div>
                 
                 <div class="col-md-4 mb-3 mb-md-0">
-                    <h5>Quick Links</h5>
+                    <h5>Tezkor havolalar</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'blog:post_list' %}" class="text-muted text-decoration-none">All Posts</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Privacy Policy</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Terms of Service</a></li>
-                        <li><a href="{% url 'admin:index' %}" class="text-muted text-decoration-none">Admin Login</a></li>
+                        <li><a href="{% url 'blog:post_list' %}" class="text-muted text-decoration-none">Barcha maqolalar</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Maxfiylik siyosati</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Foydalanish shartlari</a></li>
+                        <!-- <li><a href="{% url 'admin:index' %}" class="text-muted text-decoration-none">Admin kirishi</a></li> -->
                     </ul>
                 </div>
                 
-                <div class="col-md-4">
-                    <h5>Contact Us</h5>
+                <div class="col-md-4" id="contact">
+                    <h5>Biz bilan bog'laning</h5>
                     <ul class="list-unstyled text-muted">
-                        <li><i class="fas fa-envelope me-2"></i> support@ovozifylab.com</li>
-                        <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Tech Avenue, Innovation City</li>
+                        <li><i class="fab fa-telegram me-2"></i> @otabek_nazar</li>
+                        <li><i class="fas fa-phone me-2"></i> +998(97) 157-50-93</li>
+                        <!-- <li><i class="fas fa-map-marker-alt me-2"></i> 123 Texno ko'chasi, Innovatsiya shahri</li> -->
                     </ul>
                 </div>
                 
@@ -218,7 +277,7 @@
             <hr class="my-3">
             <div class="row">
                 <div class="col-12 text-center">
-                     <p class="text-muted mb-0">&copy; {% now "Y" %} Ovozify Lab. All rights reserved.</p>
+                     <p class="text-muted mb-0">&copy; {% now "Y" %} Ovozify Labs. Barcha huquqlar himoyalangan.</p>
                 </div>
             </div>
         </div>

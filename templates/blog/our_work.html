@@ -17,15 +17,15 @@
                     <div class="row text-center">
                         <div class="col-md-4">
                             <div class="h4 text-primary">{{ page_obj.paginator.count }}</div>
-                            <small class="text-muted">Projects</small>
+                            <small class="text-muted">Loyihalar</small>
                         </div>
                         <div class="col-md-4">
                             <div class="h4 text-success">{{ page_obj.paginator.count }}</div>
-                            <small class="text-muted">Publications</small>
+                            <small class="text-muted">Nashrlar</small>
                         </div>
                         <div class="col-md-4">
                             <div class="h4 text-info">{{ page_obj.paginator.count }}</div>
-                            <small class="text-muted">Research</small>
+                            <small class="text-muted">Tadqiqotlar</small>
                         </div>
                     </div>
                 </div>
@@ -85,10 +85,10 @@
                                 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
-                                        <i class="fas fa-eye me-1"></i>{{ post.views }} views
+                                        <i class="fas fa-eye me-1"></i>{{ post.views }} marta ko'rilgan
                                     </small>
                                     <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn-sm btn-outline-primary">
-                                        View Project <i class="fas fa-arrow-right ms-1"></i>
+                                        Loyihani ko‘rish <i class="fas fa-arrow-right ms-1"></i>
                                     </a>
                                 </div>
                             </div>
@@ -104,23 +104,23 @@
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page=1">First</a>
+                        <a class="page-link" href="?page=1">Birinchi</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Oldingi</a>
                     </li>
                     {% endif %}
 
                     <li class="page-item active">
-                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
                     </li>
 
                     {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Keyingi</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Oxirgi</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -132,11 +132,11 @@
                 <div class="mb-4">
                     <i class="fas fa-briefcase fa-4x text-muted"></i>
                 </div>
-                <h4>No work projects found</h4>
-                <p class="text-muted">We haven't published any work projects yet. Check back soon for updates!</p>
+                <h4>Loyihalar topilmadi</h4>
+                <p class="text-muted">Hali hech qanday loyiha chop etilmadi. Tez orada yangilanishlarni kuting!</p>
                 <div class="mt-4">
-                    <a href="{% url 'blog:post_list' %}" class="btn btn-primary me-2">Browse All Posts</a>
-                    <a href="{% url 'ai_models:model_list' %}" class="btn btn-outline-primary">View AI Models</a>
+                    <a href="{% url 'blog:post_list' %}" class="btn btn-primary me-2">Barcha maqolalarni ko‘rish</a>
+                    <a href="{% url 'ai_models:model_list' %}" class="btn btn-outline-primary">AI modellarini ko‘rish</a>
                 </div>
             </div>
             {% endif %}

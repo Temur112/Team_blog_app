@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load blog_extras %}
 
-{% block title %}Posts tagged with "{{ tag.name }}" - {{ block.super }}{% endblock %}
+{% block title %}"{{ tag.name }}" tegi bilan maqolalar - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -17,9 +17,9 @@
                     </h1>
                     <p class="text-muted mb-0">
                         {% if page_obj.paginator.count == 1 %}
-                            {{ page_obj.paginator.count }} post found
+                            {{ page_obj.paginator.count }} ta maqola topildi
                         {% else %}
-                            {{ page_obj.paginator.count }} posts found
+                            {{ page_obj.paginator.count }} ta maqola topildi
                         {% endif %}
                     </p>
                 </div>
@@ -75,10 +75,10 @@
                                 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
-                                        <i class="fas fa-eye me-1"></i>{{ post.views }} views
+                                        <i class="fas fa-eye me-1"></i>{{ post.views }} marta ko'rilgan
                                     </small>
                                     <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn-sm btn-outline-primary">
-                                        Read More <i class="fas fa-arrow-right ms-1"></i>
+                                        Batafsil o‘qish <i class="fas fa-arrow-right ms-1"></i>
                                     </a>
                                 </div>
                             </div>
@@ -94,23 +94,23 @@
                 <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page=1">First</a>
+                        <a class="page-link" href="?page=1">Birinchi</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Oldingi</a>
                     </li>
                     {% endif %}
 
                     <li class="page-item active">
-                        <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
                     </li>
 
                     {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Keyingi</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Oxirgi</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -122,9 +122,9 @@
                 <div class="mb-4">
                     <i class="fas fa-tag fa-4x text-muted"></i>
                 </div>
-                <h4>No posts found for this tag</h4>
-                <p class="text-muted">There are no published posts tagged with "{{ tag.name }}" yet.</p>
-                <a href="{% url 'blog:post_list' %}" class="btn btn-primary">Browse All Posts</a>
+                <h4>Ushbu teg uchun maqolalar topilmadi</h4>
+                <p class="text-muted">Hali "{{ tag.name }}" tegi bilan chop etilgan maqolalar yo‘q.</p>
+                <a href="{% url 'blog:post_list' %}" class="btn btn-primary">Barcha maqolalarni ko‘rish</a>
             </div>
             {% endif %}
         </div>

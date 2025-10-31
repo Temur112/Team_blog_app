@@ -173,8 +173,8 @@ def our_work(request):
     
     context = {
         'page_obj': page_obj,
-        'title': 'Our Work',
-        'description': 'Showcasing our team\'s projects, research, and achievements'
+        'title': 'Loyihalarimiz',
+        'description': 'Jamoamizning loyihalari va ilmiy izlanishlari'
     }
     
     return render(request, 'blog/our_work.html', context)

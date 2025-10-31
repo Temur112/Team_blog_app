@@ -2,7 +2,7 @@
 {% load blog_extras %}
 {% load embed_video_tags %}
 
-{% block title %}{{ post.title }} - Educational Blog{% endblock %}
+{% block title %}{{ post.title }} - Ta'limiy Blog{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -29,16 +29,16 @@
                             <small class="text-muted">
                                 <i class="fas fa-calendar me-1"></i>{{ post.created_at|date:"F d, Y" }}
                                 <i class="fas fa-clock ms-2 me-1"></i>{{ post.created_at|time:"g:i A" }}
-                                <i class="fas fa-eye ms-2 me-1"></i>{{ post.views }} views
+                                <i class="fas fa-eye ms-2 me-1"></i>{{ post.views }} marta ko'rilgan
                             </small>
                         </div>
                         {% if user == post.author %}
                         <div class="ms-auto">
                             <a href="{% url 'blog:edit_post' post.slug %}" class="btn btn-sm btn-outline-secondary me-2">
-                                <i class="fas fa-edit me-1"></i>Edit
+                                <i class="fas fa-edit me-1"></i>Tahrirlash
                             </a>
                             <a href="{% url 'blog:delete_post' post.slug %}" class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash me-1"></i>Delete
+                                <i class="fas fa-trash me-1"></i>O'chirish
                             </a>
                         </div>
                         {% endif %}
@@ -65,14 +65,14 @@
                 <footer class="border-top pt-3 pb-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">
-                            Last updated: {{ post.updated_at|date:"F d, Y" }}
+                            Oxirgi yangilanish: {{ post.updated_at|date:"F d, Y" }}
                         </small>
                         <div>
                             <button class="btn btn-sm btn-outline-secondary me-2" onclick="window.print()">
-                                <i class="fas fa-print me-1"></i>Print
+                                <i class="fas fa-print me-1"></i>Chop etish
                             </button>
                             <button class="btn btn-sm btn-outline-primary" onclick="copyLink()">
-                                <i class="fas fa-share me-1"></i>Share
+                                <i class="fas fa-share me-1"></i>Ulashish
                             </button>
                         </div>
                     </div>
@@ -80,9 +80,9 @@
             </article>
             
             <!-- Comments Section -->
-            <section class="mt-5">
+            <!-- <section class="mt-5">
                 <h3 class="mb-4">
-                    <i class="fas fa-comments me-2"></i>Comments ({{ comments.count }})
+                    <i class="fas fa-comments me-2"></i>Izohlar ({{ comments.count }})
                 </h3>
                 
                 {% if user.is_authenticated %}
@@ -92,13 +92,13 @@
                             {{ comment_form.content }}
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane me-1"></i>Post Comment
+                            <i class="fas fa-paper-plane me-1"></i>Izoh qoldirish
                         </button>
                     </form>
                 {% else %}
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
-                        Please <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">login</a> to post a comment.
+                        Iltimos, izoh qoldirish uchun <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="alert-link">kirish</a> qiling.
                     </div>
                 {% endif %}
                 
@@ -117,9 +117,9 @@
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-muted">No comments yet. Be the first to comment!</p>
+                <p class="text-muted">Hozircha izohlar yo'q. Birinchi bo'lib izoh qoldiring!</p>
                 {% endfor %}
-            </section>
+            </section> -->
         </div>
     </div>
 </div>
@@ -127,7 +127,7 @@
 <script>
 function copyLink() {
     navigator.clipboard.writeText(window.location.href).then(function() {
-        alert('Link copied to clipboard!');
+        alert('Havola nusxalandi!');
     });
 }
 </script>
